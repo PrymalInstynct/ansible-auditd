@@ -8,21 +8,3 @@
 {{ r }}
 {% endfor %}
 {% endif %}
-
-{% if (ansible_os_family == "Debian") %}
-# Debian family
-{% if ansible_userspace_bits == '64' %}
-{% for r in auditd_exclusion_rules_debian_b64 %}
-{{ r }}
-{% endfor %}
-{% endif %}
-{% endif %}
-
-{% if (ansible_os_family == "RedHat") %}
-# RedHat family
-{% if ansible_userspace_bits == '64' %}
-{% for r in auditd_exclusion_rules_redhat_b64 %}
-{{ r }}
-{% endfor %}
-{% endif %}
-{% endif %}

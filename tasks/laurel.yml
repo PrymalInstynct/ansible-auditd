@@ -6,49 +6,84 @@
     state: directory
     mode: '0700'
 
-- name: Fetch laurel binary
-  ansible.builtin.get_url:
-    url: "{{ auditd_laurel_url }}"
-    dest: "{{ install_archives }}/{{ auditd_laurel_url | basename }}"
-    checksum: "{{ auditd_laurel_checksum | default(omit) }}"
-    mode: '0644'
+- name: Determine latest release of laurel
+  ansible.builtin.shell: "curl -s https://github.com/threathunters-io/laurel/releases | grep -Po 'Release\\sv[^<]+' | cut -d ' ' -f2 | uniq | head -1"
+  register: laurel_latest
+  changed_when: no
+
+- name: Setting laurel version
+  ansible.builtin.set_fact:
+    laurel_version: "{{ laurel_latest.stdout }}"
 
 - name: Unarchive laurel binary
   ansible.builtin.unarchive:
-    src: "{{ install_archives }}/{{ auditd_laurel_url | basename }}"
+    src: 'https://github.com/threathunters-io/laurel/releases/download/{{ laurel_version }}/laurel-{{ laurel_version }}-x86_64-musl.tar.gz'
     dest: "/usr/local/sbin"
     mode: '0755'
-    remote_src: yes
     include: laurel
     creates: "/usr/local/sbin/laurel"
+    remote_src: yes
+  notify: Reboot
 
-- name: Add laurel user
+- name: Create laurel system account
   ansible.builtin.user:
-    name: "{{ auditd_laurel_user }}"
-    home: /nonexistent
-    create_home: false
+    name: _laurel
+    comment: 'Laurel Auditing'
+    home: /var/log/laurel
+    create_home: yes
     system: yes
+    state: present
 
 - name: Ensure /etc/laurel directory exists
   ansible.builtin.file:
     path: /etc/laurel
     state: directory
     mode: '0755'
+    owner: root
+    group: root
 
 - name: Set laurel configuration
   ansible.builtin.template:
     src: "{{ auditd_laurel_config }}"
     dest: /etc/laurel/config.toml
     mode: '0644'
+    owner: root
+    group: root
+  notify: Reboot
 
 - name: Set laurel audit plugin configuration
   ansible.builtin.template:
     src: "{{ auditd_laurel_plugin }}"
     dest: "{{ auditd_plugins }}/laurel.conf"
     mode: '0644'
+    owner: root
+    group: root
   notify:
     - Restart auditd
     - Restart auditd - rhel7+
+
+- name: SELinux Configuartion
+  block:
+  - name: Copy laurel selinux policy
+    ansible.builtin.copy:
+      src: laurel.pp
+      dest: /tmp/
+      mode: '0644'
+      owner: root
+      group: root
+
+  - name: Install laurel selinux policy
+    ansible.builtin.command: semodule -i /tmp/laurel.pp
+    register: selinux
+    failed_when: selinux.rc != 0
+    changed_when: no
+
+  - name: Set laurel selinux context
+    ansible.builtin.command: restorecon -v -R -F /usr/local/sbin/laurel /etc/laurel /var/log/laurel
+    register: restorcon
+    failed_when: restorcon.rc != 0
+    changed_when: no
+  when: selinux_enabled | bool
 
 - name: Ensure laurel reporting script exists
   ansible.builtin.template:

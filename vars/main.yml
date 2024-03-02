@@ -1,4 +1,4 @@
 ---
-
+selinux_enabled: false
 auditd_confdir: /etc/audit/rules.d
 auditd_plugins: /etc/audisp/plugins.d

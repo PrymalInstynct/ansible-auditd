@@ -41,3 +41,6 @@
   ansible.builtin.service:
     name: rsyslog
     state: restarted
+
+- name: Reboot
+  ansible.builtin.reboot:

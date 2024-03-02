@@ -1,5 +1,4 @@
 ---
-
 - name: Ensure rsyslog is present
   ansible.builtin.package:
     name: rsyslog
@@ -7,18 +6,12 @@
   register: pkg_result
   until: pkg_result is success
 
-- name: Gather package facts
-  ansible.builtin.package_facts:
-    manager: auto
-
-- name: Get rsyslog version
-  ansible.builtin.set_fact:
-    rsyslog_v: "{{ ansible_facts.packages['rsyslog'][0]['version'] }}"
-
-- name: Debug | rsyslog version
-  ansible.builtin.debug:
-    var: rsyslog_v
-    verbosity: 1
+- name: Ensure audispd-plugins is present
+  ansible.builtin.package:
+    name: "{{ audisp_pkg }}"
+    state: present
+  register: plugins_result
+  until: plugins_result is success
 
 - name: Ensure audispd base directory exists
   ansible.builtin.file:
@@ -41,22 +34,29 @@
   notify:
     - Restart rsyslog
 
-- name: Ensure audis syslog plugin is enabled
+- name: Ensure audisp syslog plugin is disabled
   community.general.ini_file:
     path: "{{ auditd_plugins }}/syslog.conf"
     section: null
-    option: active
-    value: 'yes'
+    option: "{{ item.o }}"
+    value: "{{ item.v }}"
     mode: '0640'
     backup: "{{ auditd_backup | default(false) }}"
+  loop:
+    - { o: "active", v: "no" }
+    - { o: "direction", v: "out" }
+    - { o: "path", v: "/sbin/audisp-syslog" }
+    - { o: "type", v: "always" }
+    - { o: "args", v: "LOG_INFO" }
+    - { o: "format", v: "string" }
   notify:
     - Restart auditd
     - Restart auditd - rhel7+
+    - Reboot
 
-# only if file, not if remote syslog
-- name: Debug | audisp_syslog_target
-  ansible.builtin.debug:
-    var: audisp_syslog_target
-- name: Import logrotate
-  ansible.builtin.import_tasks: logrotate.yml
-  when: "'/var/log/' in audisp_syslog_target"
+- name: Add logrotate configuration for audispd log
+  ansible.builtin.template:
+    src: logrotate-audispd.j2
+    dest: /etc/logrotate.d/audispd
+    mode: '0644'
+    validate: 'logrotate -dv %s'

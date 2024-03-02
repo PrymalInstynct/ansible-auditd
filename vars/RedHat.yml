@@ -1,6 +1,6 @@
 ---
-
+selinux_enabled: true
 auditd_pkg: audit
-
+audisp_pkg: audispd-plugins
 syslog_user: root
-auditd_plugins: /etc/audisp/plugins.d
+auditd_plugins: /etc/audit/plugins.d

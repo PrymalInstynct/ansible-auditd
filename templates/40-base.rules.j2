@@ -32,7 +32,9 @@
 -w /etc/cron.monthly/ -p wa -k cron
 -w /etc/cron.weekly/ -p wa -k cron
 -w /etc/crontab -p wa -k cron
+{% if ansible_os_family == 'RedHat' %}
 -w /var/spool/cron/crontabs/ -k cron
+{% endif %}
 
 ## user, group, password databases
 -w /etc/group -p wa -k etcgroup
@@ -88,7 +90,6 @@
 ###################
 -w /etc/sysctl.conf -p wa -k sysctl
 -w /etc/sysctl.d -p wa -k sysctl
--w /etc/modprobe.conf -p wa -k modprobe
 ###################
 
 ###################

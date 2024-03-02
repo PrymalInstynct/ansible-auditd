@@ -1,5 +1,4 @@
 ---
-
-# auditd 3
+selinux_enabled: false
 auditd_plugins: /etc/audit/plugins.d
 syslog_group: adm
