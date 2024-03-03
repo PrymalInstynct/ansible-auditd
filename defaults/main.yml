@@ -8,7 +8,7 @@ auditd_grub_enable: false
 auditd_log_tmp: true
 auditd_log_etc: true
 ## Attention! those four would generate lot of logs. alternatives: sysdig/falco, systemtap, osquery...
-auditd_log_all_execve: false
+auditd_log_all_execve: true
 auditd_log_all_socket: false
 auditd_log_all_connect: false
 auditd_rule_rootcmd_all: false
