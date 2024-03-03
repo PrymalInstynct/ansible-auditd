@@ -21,7 +21,7 @@ input = "stdin"
 # other log file related settings will be ignored.
 file = "audit.log"
 # Rotate when log file reaches this size (in bytes)
-size = "{{ auditd_laurel_rotatesize }}"
+size = {{ auditd_laurel_rotatesize }}
 # When rotating, keep this number of generations around
 generations = 10
 # Grant read permissions on the log files to these users, using

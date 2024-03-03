@@ -136,7 +136,7 @@ audispd_reporting_template: audispd_report.sh
 audispd_reporting_dest: /var/tmp
 audispd_logrotate_days: 10
 
-auditd_laurel_enable: false
+auditd_laurel_enable: true
 auditd_laurel_user: '_laurel'
 auditd_laurel_config: laurel.toml.j2
 auditd_laurel_plugin: laurel.conf.j2
