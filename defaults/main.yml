@@ -1,5 +1,5 @@
 ---
-
+auditd_splunk_installed: undefined # define variable in group_vars or host_vars and "full" or "uf"
 osquery_process_auditing: false
 audisp_syslog_enable: true
 audisp_syslog_target: /var/log/audispd/audispd.log
@@ -34,6 +34,7 @@ auditd_rules_templates:
   - 01-start
   - 05-exclusions
   - 10-audit-self
+  - 20-splunk
   - 40-base
   - 43-module-load
   - 50-cis_l2
