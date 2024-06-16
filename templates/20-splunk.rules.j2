@@ -1,10 +1,12 @@
 {{ ansible_managed | comment }}
 {% if auditd_splunk_installed == 'full' %}
 -a never,exit -F exe=/opt/splunk/bin/splunk -F uid=0
+-a never,exit -F exe=/opt/splunk/bin/splunkd -F uid=0
 -a never,exit -F path=/opt/splunk/var/run/splunk -F uid=0
 {% endif %}
 
 {% if auditd_splunk_installed == 'uf' %}
 -a never,exit -F exe=/opt/splunkforwarder/bin/splunk -F uid=0
+-a never,exit -F exe=/opt/splunkforwarder/bin/splunkd -F uid=0
 -a never,exit -F path=/opt/splunkforwarder/var/run/splunk -F uid=0
 {% endif %}
