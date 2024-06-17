@@ -1,12 +1,12 @@
 {{ ansible_managed | comment }}
 {% if auditd_splunk_installed == 'full' %}
--a never,exit -F exe=/opt/splunk/bin/splunk -F uid=0
--a never,exit -F exe=/opt/splunk/bin/splunkd -F uid=0
--a never,exit -F path=/opt/splunk/var/run/splunk -F uid=0
+-a never,exit -F arch=b64 -F uid=0 -S openat -S readlink  -F exe=/opt/splunk/bin/splunk
+-a never,exit -F arch=b64 -F uid=0 -S openat -S readlink  -F exe=/opt/splunk/bin/splunkd
+-a never,exit -F arch=b64 -F uid=0 -S openat -S readlink  -F path=/opt/splunk/var/run/splunk
 {% endif %}
 
 {% if auditd_splunk_installed == 'uf' %}
 -a never,exit -F arch=b64 -F uid=0 -S openat -S readlink -F exe=/opt/splunkforwarder/bin/splunk
--a never,exit -F exe=/opt/splunkforwarder/bin/splunkd
--a never,exit -F path=/opt/splunkforwarder/var/run/splunk
+-a never,exit -F arch=b64 -F uid=0 -S openat -S readlink -F exe=/opt/splunkforwarder/bin/splunkd
+-a never,exit -F arch=b64 -F uid=0 -S openat -S readlink -F path=/opt/splunkforwarder/var/run/splunk
 {% endif %}
