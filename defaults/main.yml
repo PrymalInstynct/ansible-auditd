@@ -145,6 +145,10 @@ auditd_conf_lineinfile:
   - { re: '^num_logs = .*', l: 'num_logs = 10' }
   # avoid 'dispatch err (pipe full) event lost' - deprecated on RHEL8
   - { re: '^disp_qos = .*', l: 'disp_qos = lossless' }
+  # ensure auditd log format is enriched
+  - { re: '^log_format = .*', l: 'log_format = enriched' }
+  # ensure auditd log format is node name is FQD
+  - { re: '^name_format = .*', l: 'name_format = fqd' }
 
 auditd_set_loginuid_immutable: true
 
