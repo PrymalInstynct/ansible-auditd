@@ -33,7 +33,7 @@ auditd_manage_configuration_directory: true
 auditd_rules_templates:
   - 01-start
   - 05-exclusions
-  - 20-splunk-exclusions
+  - 10-splunk-exclusions
   - 20-audit-self
   - 40-base
   - 43-module-load
