@@ -6,10 +6,10 @@
     state: directory
     mode: '0700'
 
-- name: Determine latest release of laurel
+- name: Determine latest release of laurel # noqa command-instead-of-module
   ansible.builtin.shell: "curl -s https://github.com/threathunters-io/laurel/releases | grep -Po 'Release\\sv[^<]+' | cut -d ' ' -f2 | uniq | head -1"
   register: laurel_latest
-  changed_when: no
+  changed_when: false
 
 - name: Setting laurel version
   ansible.builtin.set_fact:
@@ -22,7 +22,7 @@
     mode: '0755'
     include: laurel
     creates: "/usr/local/sbin/laurel"
-    remote_src: yes
+    remote_src: true
   notify: Reboot
 
 - name: Create laurel system account
@@ -30,8 +30,8 @@
     name: _laurel
     comment: 'Laurel Auditing'
     home: /var/log/laurel
-    create_home: yes
-    system: yes
+    create_home: true
+    system: true
     state: present
 
 - name: Ensure /etc/laurel directory exists
@@ -62,28 +62,28 @@
     - Restart auditd
     - Restart auditd - rhel7+
 
-- name: SELinux Configuartion
-  block:
-  - name: Copy laurel selinux policy
-    ansible.builtin.copy:
-      src: laurel.pp
-      dest: /tmp/
-      mode: '0644'
-      owner: root
-      group: root
-
-  - name: Install laurel selinux policy
-    ansible.builtin.command: semodule -i /tmp/laurel.pp
-    register: selinux
-    failed_when: selinux.rc != 0
-    changed_when: no
-
-  - name: Set laurel selinux context
-    ansible.builtin.command: restorecon -v -R -F /usr/local/sbin/laurel /etc/laurel /var/log/laurel
-    register: restorcon
-    failed_when: restorcon.rc != 0
-    changed_when: no
+- name: SELinux Configuration
   when: selinux_enabled | bool
+  block:
+    - name: Copy laurel selinux policy
+      ansible.builtin.copy:
+        src: laurel.pp
+        dest: /tmp/
+        mode: '0644'
+        owner: root
+        group: root
+
+    - name: Install laurel selinux policy
+      ansible.builtin.command: semodule -i /tmp/laurel.pp
+      register: selinux
+      failed_when: selinux.rc != 0
+      changed_when: false
+
+    - name: Set laurel selinux context
+      ansible.builtin.command: restorecon -v -R -F /usr/local/sbin/laurel /etc/laurel /var/log/laurel
+      register: restorecon
+      failed_when: restorecon.rc != 0
+      changed_when: false
 
 - name: Ensure laurel reporting script exists
   ansible.builtin.template:
