@@ -23,7 +23,6 @@
     include: laurel
     creates: "/usr/local/sbin/laurel"
     remote_src: true
-  notify: Reboot
 
 - name: Create laurel system account
   ansible.builtin.user:
@@ -49,7 +48,6 @@
     mode: '0644'
     owner: root
     group: root
-  notify: Reboot
 
 - name: Set laurel audit plugin configuration
   ansible.builtin.template:

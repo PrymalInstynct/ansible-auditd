@@ -52,7 +52,6 @@
   notify:
     - Restart auditd
     - Restart auditd - rhel7+
-    - Reboot
 
 - name: Add logrotate configuration for audispd log
   ansible.builtin.template:

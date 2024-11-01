@@ -96,7 +96,6 @@
         - Restart auditd
         - Restart auditd - rhel7+
         - Restart auditd - suse
-        - Reboot
 
     # /sbin/augenrules isn't present to generate /etc/audit/audit.rules
     - name: Assemble rules into a single file
